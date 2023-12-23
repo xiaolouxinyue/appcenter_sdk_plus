@@ -1,10 +1,14 @@
 import 'package:appcenter_sdk_plus/appcenter_sdk_plus.dart';
 import 'package:appcenter_sdk_plus/service/appcenter_analytics.dart';
+import 'package:appcenter_sdk_plus/service/appcenter_analytics_observer.dart';
 import 'package:appcenter_sdk_plus/service/appcenter_crashes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppCenter.start("8e14e67c-7c91-40ac-8517-c62ece8424a6");
+
   runApp(const MyApp());
 }
 
@@ -19,6 +23,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      navigatorObservers: [
+        AppCenterAnalyticsObserver(),
+      ],
       initialRoute: LoadingPage.route,
       routes: {
         LoadingPage.route: (context) => const LoadingPage(),
@@ -91,7 +98,7 @@ class LoadingPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             FutureBuilder<void>(
-                future: AppCenter.start("8e14e67c-7c91-40ac-8517-c62ece8424a6"),
+                future: Future.delayed(const Duration(seconds: 3)),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.none ||
                       snapshot.connectionState == ConnectionState.waiting) {

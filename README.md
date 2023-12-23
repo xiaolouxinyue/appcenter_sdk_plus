@@ -12,6 +12,7 @@ This package provides operations for:
 
 - sending log events to AppCenter Analytics
 - sending crash reports to AppCenter Crashes
+- tracking screen views
 
 ## Getting started
 

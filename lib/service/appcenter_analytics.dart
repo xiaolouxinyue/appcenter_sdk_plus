@@ -66,14 +66,14 @@ class AppCenterAnalytics {
           code: "empty",
         );
       }
-      if (entry.key.length > 126) {
+      if (entry.key.length > 125) {
         throw AppCenterException(
           plugin: _pluginName,
           message: "Property name is longer than 125 chars, name=${entry.key}",
           code: "limit_exceeded",
         );
       }
-      if (entry.value.length > 126) {
+      if (entry.value.length > 125) {
         throw AppCenterException(
           plugin: _pluginName,
           message:
