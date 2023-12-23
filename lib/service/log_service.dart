@@ -1,0 +1,91 @@
+import 'package:appcenter_sdk_plus/service/appcenter_analytics.dart';
+import 'package:appcenter_sdk_plus/service/appcenter_crashes.dart';
+import 'package:flutter/foundation.dart';
+
+import '../domain/appcenter_options.dart';
+import '../domain/log.dart';
+import '../infrastructure/appcenter/appcenter_client.dart';
+import '../infrastructure/appcenter/http_exception.dart';
+import '../infrastructure/appcenter/send_logs_response.dart';
+import '../infrastructure/persistence/log_repository.dart';
+
+/// Used internally by [AppCenterAnalytics] and [AppCenterCrashes] to send logs.
+/// The logs are first written to device storage and when the preconditions are
+/// met they are sent to AppCenter server.
+class LogService {
+  final LogRepository _logRepository;
+  final AppCenterClient _client;
+  final int _batchSize;
+  final Duration _minDelayBetweenRequests;
+  DateTime? _lastSendingTime;
+
+  LogService._internal(
+    this._logRepository,
+    this._client,
+    this._batchSize,
+    this._minDelayBetweenRequests,
+  );
+
+  static Future<LogService> create(LogRepository logRepository,
+      AppCenterClient client, AppCenterOptions options) async {
+    var logService = LogService._internal(
+      logRepository,
+      client,
+      options.logsBatchSize,
+      options.minDelayBetweenRequests,
+    );
+    await logService._sendCachedLogs();
+    return logService;
+  }
+
+  Future<void> addLog(Log logItem) async {
+    await _logRepository.save(logItem);
+    await _sendCachedLogs();
+  }
+
+  Future<void> _sendCachedLogs() async {
+    var now = DateTime.now().toUtc();
+    if (_lastSendingTime != null &&
+        now.difference(_lastSendingTime!) <= _minDelayBetweenRequests) {
+      return;
+    }
+
+    var totalLogs = await _logRepository.count();
+    if (totalLogs == 0) {
+      return;
+    }
+
+    int processedLogs = 0;
+    bool success;
+    do {
+      success = false;
+      var logs = await _logRepository.findAll(0, _batchSize);
+      _lastSendingTime = now;
+      try {
+        var response = await _client.sendLogs(logs);
+        var clearLogsCount = await _clearSentLogs(logs, response);
+        success = clearLogsCount == logs.length;
+        processedLogs += clearLogsCount;
+      } on HttpException catch (e) {
+        if (e.statusCode < 500 && e.statusCode != 408 && e.statusCode != 429) {
+          await _clearSentLogs(logs);
+        }
+      }
+    } while (success && processedLogs < totalLogs);
+  }
+
+  Future<int> _clearSentLogs(List<Log> logs,
+      [SendLogsResponse? response]) async {
+    var logIds = logs.map((item) => item.id).toList();
+    if (response != null && kDebugMode) {
+      var wrongLogs = logs
+          .where((item) =>
+              !response.throttledDiagnosticsIds.contains(item.id) &&
+              !response.validDiagnosticsIds.contains(item.id))
+          .toList();
+      print("Possible wrong log items: $wrongLogs");
+    }
+    await _logRepository.deleteByIds(logIds);
+    return logIds.length;
+  }
+}

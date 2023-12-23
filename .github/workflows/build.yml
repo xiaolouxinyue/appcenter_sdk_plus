@@ -1,0 +1,44 @@
+name: Build and test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze project source
+        run: flutter analyze
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Check publish warnings
+        run: dart pub publish --dry-run
+  #      - name: Check publish score
+  #        run: |
+  #          dart pub global activate pana
+  #          dart pub global run pana --no-warning --exit-code-threshold 0
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests
+        run: flutter test
