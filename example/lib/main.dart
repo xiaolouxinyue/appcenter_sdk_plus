@@ -91,7 +91,7 @@ class LoadingPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             FutureBuilder<void>(
-                future: AppCenter.start("8e14e67c-7c91-40ac-8517-c62ece8424a6"),
+                future: AppCenter.start("00000000-0000-0000-0000-000000000001"),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.none ||
                       snapshot.connectionState == ConnectionState.waiting) {
