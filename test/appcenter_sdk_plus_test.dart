@@ -23,10 +23,10 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
 
     var appCenter =
-        await AppCenter.start("00000000-0000-0000-0000-000000000001",
+        await AppCenter.start("8e14e67c-7c91-40ac-8517-c62ece8424a6",
             options: AppCenterOptions(
                 logsDbPath: testDbPath,
-                installId: "00000000-0000-0000-0000-000000000002",
+                installId: "00000000-0000-0000-0000-000000000001",
                 device: Device(
                   model: "123",
                   oemName: "Test",

@@ -39,7 +39,7 @@ import 'package:appcenter_sdk_plus/service/appcenter_crashes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await AppCenter.start("00000000-0000-0000-0000-000000000001");
+  await AppCenter.start("8e14e67c-7c91-40ac-8517-c62ece8424a6");
   await AppCenterAnalytics.trackEvent("app_started",
       properties: {"theme": "system"});
   try {
