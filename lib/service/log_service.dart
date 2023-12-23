@@ -77,13 +77,10 @@ class LogService {
   Future<int> _clearSentLogs(List<Log> logs,
       [SendLogsResponse? response]) async {
     var logIds = logs.map((item) => item.id).toList();
-    if (response != null && kDebugMode) {
-      var wrongLogs = logs
-          .where((item) =>
-              !response.throttledDiagnosticsIds.contains(item.id) &&
-              !response.validDiagnosticsIds.contains(item.id))
-          .toList();
-      print("Possible wrong log items: $wrongLogs");
+    if (response != null && response.status != "Success") {
+      if (kDebugMode) {
+        print("AppCenter server response: $response");
+      }
     }
     await _logRepository.deleteByIds(logIds);
     return logIds.length;
