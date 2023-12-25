@@ -1,5 +1,7 @@
 library appcenter_sdk_plus;
 
+import 'package:logging/logging.dart';
+import 'package:logging_appenders/logging_appenders.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -30,6 +32,8 @@ class AppCenter {
   /// This may be called only once per application process lifetime.
   static Future<AppCenter> start(String appSecret,
       {AppCenterOptions options = const AppCenterOptions()}) async {
+    PrintAppender.setupLogging(level: Level.INFO);
+
     var logRepository = await LogRepository.create(options.logsDbPath);
     var installId = options.installId ?? await _readInstallIdFromSettings();
     var client = AppCenterClient(appSecret, installId, options.sendLogsTimeout);

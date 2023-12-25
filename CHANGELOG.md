@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Add logging framework and remove web support for device service
+
 ## 1.0.1
 
 * Add AppCenterAnalyticsObserver

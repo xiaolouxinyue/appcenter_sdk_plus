@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import '../constants.dart';
+import '../util/constants.dart';
 
 /// Device characteristic log.
 @immutable

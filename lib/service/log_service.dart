@@ -1,12 +1,7 @@
-import 'package:appcenter_sdk_plus/service/appcenter_analytics.dart';
-import 'package:appcenter_sdk_plus/service/appcenter_crashes.dart';
-import 'package:flutter/foundation.dart';
-
 import '../domain/appcenter_options.dart';
 import '../domain/log.dart';
 import '../infrastructure/appcenter/appcenter_client.dart';
 import '../infrastructure/appcenter/http_exception.dart';
-import '../infrastructure/appcenter/send_logs_response.dart';
 import '../infrastructure/persistence/log_repository.dart';
 
 /// Used internally by [AppCenterAnalytics] and [AppCenterCrashes] to send logs.
@@ -62,8 +57,8 @@ class LogService {
       var logs = await _logRepository.findAll(0, _batchSize);
       _lastSendingTime = now;
       try {
-        var response = await _client.sendLogs(logs);
-        var clearLogsCount = await _clearSentLogs(logs, response);
+        await _client.sendLogs(logs);
+        var clearLogsCount = await _clearSentLogs(logs);
         success = clearLogsCount == logs.length;
         processedLogs += clearLogsCount;
       } on HttpException catch (e) {
@@ -74,14 +69,8 @@ class LogService {
     } while (success && processedLogs < totalLogs);
   }
 
-  Future<int> _clearSentLogs(List<Log> logs,
-      [SendLogsResponse? response]) async {
+  Future<int> _clearSentLogs(List<Log> logs) async {
     var logIds = logs.map((item) => item.id).toList();
-    if (response != null && response.status != "Success") {
-      if (kDebugMode) {
-        print("AppCenter server response: $response");
-      }
-    }
     await _logRepository.deleteByIds(logIds);
     return logIds.length;
   }

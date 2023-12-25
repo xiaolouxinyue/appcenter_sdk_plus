@@ -1,6 +1,7 @@
-import 'package:appcenter_sdk_plus/service/appcenter_analytics.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:logging/logging.dart';
+
+import 'appcenter_analytics.dart';
 
 /// Signature for a function that extracts a screen name from [RouteSettings].
 ///
@@ -55,6 +56,8 @@ bool defaultRouteFilter(Route<dynamic>? route) => route is PageRoute;
 /// [RouteAware<ModalRoute<dynamic>>] and subscribing it to [AppCenterAnalyticsObserver]. See the
 /// [RouteObserver<ModalRoute<dynamic>>] docs for an example.
 class AppCenterAnalyticsObserver extends RouteObserver<ModalRoute<dynamic>> {
+  static final Logger _log = Logger((AppCenterAnalyticsObserver).toString());
+
   /// Creates a [NavigatorObserver] that sends events to [AppCenterAnalytics].
   ///
   /// When a route is pushed or popped, [nameExtractor] is used to extract a
@@ -74,10 +77,8 @@ class AppCenterAnalyticsObserver extends RouteObserver<ModalRoute<dynamic>> {
       try {
         AppCenterAnalytics.trackEvent("screen_view",
             properties: {"screenName": _truncate(screenName, 256)});
-      } catch (e) {
-        if (kDebugMode) {
-          print(e);
-        }
+      } catch (e, s) {
+        _log.severe("Cannot send screen view event", e, s);
       }
     }
   }

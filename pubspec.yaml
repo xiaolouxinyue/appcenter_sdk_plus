@@ -1,6 +1,6 @@
 name: appcenter_sdk_plus
 description: "AppCenter SDK written purely in Flutter with support for AppCenter Analytics and AppCenter Crashes."
-version: 1.0.1
+version: 1.0.2
 repository: https://github.com/octavian-h/appcenter_sdk_plus
 
 environment:
@@ -12,11 +12,13 @@ dependencies:
     sdk: flutter
   device_info_plus: ^9.1.1
   http: ^1.1.2
+  logging: ^1.2.0
+  logging_appenders: ^1.2.0+1
   package_info_plus: ^5.0.1
   path: ^1.8.3
   path_provider: ^2.1.1
   shared_preferences: ^2.2.2
-  sqlite3_async: ^1.0.2
+  sqlite3_async: ^1.0.3
   uuid: ^4.2.2
 
 dev_dependencies:

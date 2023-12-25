@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../domain/device.dart';
@@ -10,6 +11,7 @@ import '../../service/device_service.dart';
 
 /// Used to determine physical device details
 class PhysicalDeviceService implements DeviceService {
+  static final Logger _log = Logger((PhysicalDeviceService).toString());
   final PackageInfo _packageInfo;
   final BaseDeviceInfo _deviceInfo;
 
@@ -24,9 +26,6 @@ class PhysicalDeviceService implements DeviceService {
   @override
   Device get device {
     String screenSize = _buildScreenSize();
-    if (kIsWeb) {
-      return _buildDeviceInfoForWeb(screenSize);
-    }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return _buildDeviceInfoForAndroid(screenSize);
@@ -48,10 +47,8 @@ class PhysicalDeviceService implements DeviceService {
       var width = physicalSize.width.toStringAsFixed(0);
       var height = physicalSize.height.toStringAsFixed(0);
       return "${width}x$height";
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+    } catch (e, s) {
+      _log.warning("Cannot get screen size", e, s);
       return "unknown";
     }
   }
@@ -120,21 +117,6 @@ class PhysicalDeviceService implements DeviceService {
     return Device(
       model: androidDeviceInfo.model,
       oemName: androidDeviceInfo.manufacturer,
-      osName: Platform.operatingSystem,
-      osVersion: Platform.operatingSystemVersion,
-      locale: Platform.localeName,
-      screenSize: screenSize,
-      appVersion: _packageInfo.version,
-      appBuild: _packageInfo.buildNumber,
-      appNamespace: _packageInfo.packageName,
-    );
-  }
-
-  Device _buildDeviceInfoForWeb(String screenSize) {
-    var browserDeviceInfo = _deviceInfo as WebBrowserInfo;
-    return Device(
-      model: browserDeviceInfo.userAgent ?? "unknown",
-      oemName: browserDeviceInfo.vendor ?? "unknown",
       osName: Platform.operatingSystem,
       osVersion: Platform.operatingSystemVersion,
       locale: Platform.localeName,
