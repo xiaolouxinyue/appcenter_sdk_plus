@@ -1,7 +1,6 @@
 library appcenter_sdk_plus;
 
 import 'package:logging/logging.dart';
-import 'package:logging_appenders/logging_appenders.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -15,6 +14,8 @@ import 'service/log_service.dart';
 import 'service/simple_device_service.dart';
 
 class AppCenter {
+  static final Logger _log = Logger((AppCenter).toString());
+  static const String _installIdKey = "appcenter_install_id";
   final String appLaunchTimestamp;
   final String sessionId;
   final LogService logService;
@@ -32,8 +33,7 @@ class AppCenter {
   /// This may be called only once per application process lifetime.
   static Future<AppCenter> start(String appSecret,
       {AppCenterOptions options = const AppCenterOptions()}) async {
-    PrintAppender.setupLogging(level: Level.INFO);
-
+    _log.fine("Init AppCenter with options=$options");
     var logRepository = await LogRepository.create(options.logsDbPath);
     var installId = options.installId ?? await _readInstallIdFromSettings();
     var client = AppCenterClient(appSecret, installId, options.sendLogsTimeout);
@@ -54,14 +54,14 @@ class AppCenter {
   }
 
   static Future<String> _readInstallIdFromSettings() async {
+    _log.fine("Read installId from settings");
     var sharedPreferences = await SharedPreferences.getInstance();
-    var key = "appcenter_install_id";
-    if (sharedPreferences.containsKey(key)) {
-      return sharedPreferences.getString(key) ?? const Uuid().v1();
+    if (sharedPreferences.containsKey(_installIdKey)) {
+      return sharedPreferences.getString(_installIdKey) ?? const Uuid().v1();
     }
 
     var randomId = const Uuid().v1();
-    sharedPreferences.setString(key, randomId);
+    sharedPreferences.setString(_installIdKey, randomId);
     return randomId;
   }
 

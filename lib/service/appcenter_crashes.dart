@@ -39,6 +39,15 @@ class AppCenterCrashes {
   }
 
   static void _validateArgs(Map<String, String> properties) {
+    if (properties.length > 5) {
+      throw AppCenterException(
+        plugin: _pluginName,
+        message:
+            "There are more than 5 properties, length=${properties.length}",
+        code: "limit_exceeded",
+      );
+    }
+
     for (var entry in properties.entries) {
       if (entry.key.isEmpty) {
         throw const AppCenterException(

@@ -10,8 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  sqlite3_flutter_libs: ^0.5.18
-  cupertino_icons: ^1.0.2
+  sqlite3_flutter_libs: ^0.5.20
+  cupertino_icons: ^1.0.6
+  logging: ^1.2.0
+  logging_appenders: ^1.2.0+1
   appcenter_sdk_plus:
     path: ../
 

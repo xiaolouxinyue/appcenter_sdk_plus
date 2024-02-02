@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3_async/sqlite3_async.dart';
@@ -11,6 +12,7 @@ import '../../domain/managed_error_log.dart';
 
 @immutable
 class LogRepository {
+  static final Logger _log = Logger((LogRepository).toString());
   static const int _logsDbVersion = 1;
   static const String _tableName = "logs";
   final AsyncDatabase db;
@@ -32,6 +34,7 @@ class LogRepository {
   }
 
   static Future<AsyncDatabase> _createAndOpenLogsDb(String dbPath) async {
+    _log.fine("Create cache db for storing logs at path: $dbPath");
     var db = await AsyncDatabase.open(dbPath);
     var dbVersion = await db.getUserVersion();
     if (dbVersion == _logsDbVersion) {
@@ -56,6 +59,7 @@ class LogRepository {
   }
 
   Future<void> save(Log logItem) async {
+    _log.fine("Saving log item: $logItem");
     return await db.execute(
         "INSERT INTO $_tableName (id,type,timestamp,value) "
         "VALUES (?,?,?,?)",
@@ -68,6 +72,7 @@ class LogRepository {
   }
 
   Future<List<Log>> findAll(int offset, int limit) async {
+    _log.fine("Find logs sorted by timestamp, offset=$offset, limit=$limit");
     return (await db.select(
             "SELECT * "
             "FROM $_tableName "
@@ -79,6 +84,7 @@ class LogRepository {
   }
 
   Future<void> deleteByIds(List<String> logItemIds) async {
+    _log.fine("Delete log items with ids: $logItemIds");
     if (logItemIds.isEmpty) {
       return;
     }
@@ -88,6 +94,7 @@ class LogRepository {
   }
 
   Future<int> count() async {
+    _log.fine("Count logs");
     return (await db.select("SELECT count(id) AS c FROM $_tableName"))
         .first["c"] as int;
   }

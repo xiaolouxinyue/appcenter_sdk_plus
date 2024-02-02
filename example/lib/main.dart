@@ -4,9 +4,13 @@ import 'package:appcenter_sdk_plus/service/appcenter_analytics_observer.dart';
 import 'package:appcenter_sdk_plus/service/appcenter_crashes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:logging/logging.dart';
+import 'package:logging_appenders/logging_appenders.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  PrintAppender.setupLogging(level: Level.FINE);
+
   await AppCenter.start("8e14e67c-7c91-40ac-8517-c62ece8424a6");
 
   runApp(const MyApp());

@@ -16,6 +16,7 @@ class PhysicalDeviceService implements DeviceService {
   final BaseDeviceInfo _deviceInfo;
 
   static Future<PhysicalDeviceService> create() async {
+    _log.fine("Init PackageInfo and DeviceInfo plugins");
     var packageInfo = await PackageInfo.fromPlatform();
     var deviceInfo = await DeviceInfoPlugin().deviceInfo;
     return PhysicalDeviceService._internal(packageInfo, deviceInfo);

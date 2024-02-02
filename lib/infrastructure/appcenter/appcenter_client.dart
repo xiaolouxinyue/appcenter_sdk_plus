@@ -28,7 +28,8 @@ class AppCenterClient {
       response = await http
           .post(_buildUrl(), headers: _buildHeaders(), body: requestBody)
           .timeout(_sendTimeout);
-    } on TimeoutException {
+    } on TimeoutException catch (e, s) {
+      _log.warning("Timeout at sending logs to AppCenter", e, s);
       throw const HttpException(statusCode: 408, message: "Connection timeout");
     } catch (e, s) {
       _log.severe("Failed to send logs to AppCenter", e, s);

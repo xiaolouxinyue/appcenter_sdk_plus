@@ -1,3 +1,5 @@
+import 'package:logging/logging.dart';
+
 import '../domain/appcenter_options.dart';
 import '../domain/log.dart';
 import '../infrastructure/appcenter/appcenter_client.dart';
@@ -8,6 +10,7 @@ import '../infrastructure/persistence/log_repository.dart';
 /// The logs are first written to device storage and when the preconditions are
 /// met they are sent to AppCenter server.
 class LogService {
+  static final Logger _log = Logger((LogService).toString());
   final LogRepository _logRepository;
   final AppCenterClient _client;
   final int _batchSize;
@@ -50,6 +53,7 @@ class LogService {
       return;
     }
 
+    _log.fine("Send cached logs, count=$totalLogs");
     int processedLogs = 0;
     bool success;
     do {
@@ -63,7 +67,12 @@ class LogService {
         processedLogs += clearLogsCount;
       } on HttpException catch (e) {
         if (e.statusCode < 500 && e.statusCode != 408 && e.statusCode != 429) {
+          _log.warning(
+              "Logs will not be re-send because of invalid api key or invalid data",
+              e);
           await _clearSentLogs(logs);
+        } else {
+          _log.warning("Logs will be re-send", e);
         }
       }
     } while (success && processedLogs < totalLogs);

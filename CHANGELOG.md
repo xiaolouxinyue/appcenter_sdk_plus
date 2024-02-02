@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Improve logging and update dependencies
+
 ## 1.0.2
 
 * Add logging framework and remove web support for device service

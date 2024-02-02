@@ -6,7 +6,7 @@ import 'appcenter_analytics.dart';
 /// Signature for a function that extracts a screen name from [RouteSettings].
 ///
 /// Usually, the route name is not a plain string, and it may contains some
-/// unique ids that makes it difficult to aggregate over them in Firebase
+/// unique ids that makes it difficult to aggregate over them in AppCenter
 /// Analytics.
 typedef ScreenNameExtractor = String? Function(RouteSettings settings);
 
@@ -19,12 +19,13 @@ typedef RouteFilter = bool Function(Route<dynamic>? route);
 
 bool defaultRouteFilter(Route<dynamic>? route) => route is PageRoute;
 
-/// A [NavigatorObserver] that sends events to Firebase Analytics when the
+/// A [NavigatorObserver] that sends events to AppCenter Analytics when the
 /// currently active [ModalRoute] changes.
+/// (similar with FirebaseAnalyticsObserver)
 ///
 /// When a route is pushed or popped, and if [routeFilter] is true,
 /// [nameExtractor] is used to extract a name  from [RouteSettings] of the now
-/// active route and that name is sent to Firebase.
+/// active route and that name is sent to AppCenter Analytics.
 ///
 /// The following operations will result in sending a screen view event:
 /// ```dart

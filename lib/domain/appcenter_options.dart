@@ -19,4 +19,28 @@ class AppCenterOptions {
     this.installId,
     this.device,
   });
+
+  AppCenterOptions.fromMap(Map<String, dynamic> map)
+      : sendLogsTimeout = map['sendLogsTimeout'],
+        logsBatchSize = map['logsBatchSize'],
+        minDelayBetweenRequests = map['minDelayBetweenRequests'],
+        logsDbPath = map['logsDbPath'],
+        installId = map['installId'],
+        device = Device.fromMap(map['device']);
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'sendLogsTimeout': sendLogsTimeout,
+      'logsBatchSize': logsBatchSize,
+      'minDelayBetweenRequests': minDelayBetweenRequests,
+      'logsDbPath': logsDbPath,
+      'installId': installId,
+      'device': device?.toMap(),
+    };
+  }
+
+  @override
+  String toString() {
+    return 'AppCenterOptions${toMap()}';
+  }
 }
